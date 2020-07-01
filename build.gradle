@@ -10,15 +10,8 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
-
 	maven {
-		name 'nexus'
-		url 'http://192.168.227.52:8081/repository/maven-releases/'
-		credentials {
-			username 'builder'
-			password 'Please123!'
-		}
+		url "http://nexus:8081/repository/maven-public/"
 	}
 }
 
