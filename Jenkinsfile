@@ -1,9 +1,16 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'gradle:dk11'
+        }
+    }
+    environment {
+        CI = 'true'
+    }
     stages {
         stage('Build') {
             steps {
-                sh 'echo "Hello world!"'
+                sh 'gradle build'
             }
         }
     }
