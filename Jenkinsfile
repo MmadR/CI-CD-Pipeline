@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'gradle clean build --full-stacktrace -Dorg.gradle.daemon=false'
+                sh 'gradle clean build'
             }
         }
     }
