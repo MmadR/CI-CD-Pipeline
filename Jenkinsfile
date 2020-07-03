@@ -31,7 +31,10 @@ pipeline {
             }
         }
         stage('Integration') {
-            when { not { anyOf { branch pattern: "hotfix/\\d+", comparator: "REGEXP"; branch pattern: "feature/\\d+", comparator: "REGEXP" } } }
+            when {
+                not { branch pattern: "hotfix/\\d+", comparator: "REGEXP" }
+                not { branch pattern: "feature/\\d+", comparator: "REGEXP" }
+            }
             parallel {
                 stage('Junit Integration Test') {
                     steps {
@@ -46,27 +49,39 @@ pipeline {
             }
         }
         stage('Sonar Analysis') {
-            when { not { anyOf { branch pattern: "hotfix/\\d+", comparator: "REGEXP" branch pattern: "feature/\\d+", comparator: "REGEXP" } } }
+            when {
+                not { branch pattern: "hotfix/\\d+", comparator: "REGEXP" }
+                not { branch pattern: "feature/\\d+", comparator: "REGEXP" }
+            }
             steps {
                 echo "Sonar Analysis"
                 echo "Sonar Gateway Results"
             }
         }
         stage('Publish Artifacts') {
-            when { not { anyOf { branch pattern: "hotfix/\\d+", comparator: "REGEXP" branch pattern: "feature/\\d+", comparator: "REGEXP" } } }
+            when {
+                not { branch pattern: "hotfix/\\d+", comparator: "REGEXP" }
+                not { branch pattern: "feature/\\d+", comparator: "REGEXP" }
+            }
             steps {
                 echo "Push to Registry"
             }
         }
         stage('Deploy to UAT') {
-            when { not { anyOf { branch pattern: "hotfix/\\d+", comparator: "REGEXP" branch pattern: "feature/\\d+", comparator: "REGEXP" } } }
+            when {
+                not { branch pattern: "hotfix/\\d+", comparator: "REGEXP" }
+                not { branch pattern: "feature/\\d+", comparator: "REGEXP" }
+            }
             steps {
                 echo "Provision UAT"
                 echo "Deploy to UAT"
             }
         }
         stage('UAT Tests') {
-            when { not { anyOf { branch pattern: "hotfix/\\d+", comparator: "REGEXP" branch pattern: "feature/\\d+", comparator: "REGEXP" } } }
+            when {
+                not { branch pattern: "hotfix/\\d+", comparator: "REGEXP" }
+                not { branch pattern: "feature/\\d+", comparator: "REGEXP" }
+            }
             parallel {
                 stage('End to End Test Client/Server') {
                     steps {
