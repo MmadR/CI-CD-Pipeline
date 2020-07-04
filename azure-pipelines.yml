@@ -26,7 +26,7 @@ jobs:
     steps:
       - bash: echo "Build"
 
-  - job: Unit Test
+  - job: Unit_Test
     strategy:
       parallel: 4
     steps:
@@ -35,7 +35,7 @@ jobs:
       - bash: echo "ArchUnit Test"
       - bash: echo "JDepend Test"
 
-  - job: Integration Test
+  - job: Integration_Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     strategy:
       parallel: 2
@@ -43,24 +43,24 @@ jobs:
       - bash: echo "JUnit Integration Test"
       - bash: echo "React functional Test"
 
-  - job: Sonar Quality Gate
+  - job: Sonar Quality_Gate
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     steps:
       - bash: echo "Sonarqube analysis"
       - bash: echo "Sonarqube quality gate check"
 
-  - job: Publish Artifacts
+  - job: Publish_Artifacts
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     steps:
       - bash: echo "Publishing"
 
-  - job: Deploy to UAT
+  - job: Deploy_UAT
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     steps:
       - bash: echo "Provision UAT"
       - bash: echo "Deploy to UAT"
 
-  - job: UAT Test
+  - job: UAT_Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     strategy:
       parallel: 3
@@ -69,17 +69,17 @@ jobs:
       - bash: echo "Performance"
       - bash: echo "*-ilities..."
 
-  - job: Deploy to DEV
+  - job: Deploy_DEV
     condition: and(succeeded(), eq(variables.isDevelop, true))
     steps:
       - bash: echo "Deploy"
 
-  - job: Deploy to Staging
+  - job: Deploy_Staging
     condition: and(succeeded(), eq(variables.isRelease, true), eq(variables.isMaster, true))
     steps:
       - bash: echo "Deploy"
 
-  - job: Deploy to PROD
+  - job: Deploy_PROD
     condition: and(succeeded(), eq(variables.isMaster, true))
     steps:
       - bash: echo "Deploy"
