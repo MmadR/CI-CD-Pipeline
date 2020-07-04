@@ -43,7 +43,7 @@ jobs:
       - bash: echo "JUnit Integration Test"
       - bash: echo "React functional Test"
 
-  - job: Sonar Quality_Gate
+  - job: Sonar_Quality_Gate
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     steps:
       - bash: echo "Sonarqube analysis"
