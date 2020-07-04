@@ -28,7 +28,7 @@ jobs:
 
   - job: Unit Test
     strategy:
-      parallel:
+      parallel: 4
     steps:
       - bash: echo "JUnit Test"
       - bash: echo "Jest Test"
@@ -38,7 +38,7 @@ jobs:
   - job: Integration Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     strategy:
-      parallel:
+      parallel: 2
     steps:
       - bash: echo "JUnit Integration Test"
       - bash: echo "React functional Test"
@@ -63,7 +63,7 @@ jobs:
   - job: UAT Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     strategy:
-      parallel:
+      parallel: 3
     steps:
       - bash: echo "End2End"
       - bash: echo "Performance"
