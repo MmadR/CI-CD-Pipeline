@@ -56,3 +56,46 @@ stages:
         steps:
           - bash: echo "Sonarqube analysis"
           - bash: echo "Sonarqube quality gate check"
+
+
+  - stage: Publish
+    dependsOn: Sonar_Quality_Gate
+    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
+    jobs:
+      - job: Publish_Artifacts
+        steps:
+          - bash: echo "Publishing"
+
+  - stage: UAT
+    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
+    jobs:
+      - job: Deploy_UAT
+        steps:
+          - bash: echo "Provision UAT"
+          - bash: echo "Deploy to UAT"
+
+      - job: End2End
+        dependsOn: Deploy_UAT
+        steps:
+        - bash: echo "End2End"
+      - job: Performance
+        dependsOn: Deploy_UAT
+        steps:
+          - bash: echo "Performance"
+
+  - stage: Deployment
+    dependsOn: UAT
+    jobs:
+    - job: Deploy_DEV
+      condition: and(succeeded(), eq(variables.isDevelop, true))
+      steps:
+      - bash: echo "Deploy"
+    - job: Deploy_Staging
+      condition: and(succeeded(), eq(variables.isRelease, true), eq(variables.isMaster, true))
+      steps:
+        - bash: echo "Deploy"
+
+    - job: Deploy_PROD
+      condition: and(succeeded(), eq(variables.isMaster, true))
+      steps:
+        - bash: echo "Deploy"
