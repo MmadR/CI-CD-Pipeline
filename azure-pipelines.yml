@@ -33,7 +33,7 @@ stages:
       - job: JUnit_Test
         steps:
           - bash: echo "JUnit Test"
-      - job: JUnit_Test
+      - job: Jest_Test
         steps:
           - bash: echo "Jest Test"
 
@@ -41,18 +41,18 @@ stages:
     dependsOn: Unit_Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     jobs:
-      - job: Test
+      - job: Integration_Test
         steps:
           - bash: echo "JUnit Integration Test"
-      - job: JUnit_Test
+      - job: UI_Functional_Test
         steps:
-          - bash: echo "UII Functional Test"
+          - bash: echo "UI Functional Test"
 
   - stage: Sonar_Quality_Gate
     dependsOn: Integration_Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
     jobs:
-      - job: Test
+      - job: Sonar
         steps:
           - bash: echo "Sonarqube analysis"
           - bash: echo "Sonarqube quality gate check"
