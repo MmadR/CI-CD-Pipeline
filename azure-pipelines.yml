@@ -1,0 +1,85 @@
+trigger:
+  - master
+  - develop
+  - releases/*
+  - hotfix/*
+  - feature/*
+
+pr:
+  - master
+  - develop
+  - releases/*
+  - feature/*
+
+variables:
+  isMaster: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
+  isRelease: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/release')]
+  isFeature: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/feature')]
+  isHotfix: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix')]
+  isDevelop: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+
+pool:
+  vmImage: "ubuntu-16.04"
+
+jobs:
+  - job: Build
+    steps:
+      - bash: echo "Build"
+
+  - job: Unit Test
+    strategy:
+      parallel:
+    steps:
+      - bash: echo "JUnit Test"
+      - bash: echo "Jest Test"
+      - bash: echo "ArchUnit Test"
+      - bash: echo "JDepend Test"
+
+  - job: Integration Test
+    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
+    strategy:
+      parallel:
+    steps:
+      - bash: echo "JUnit Integration Test"
+      - bash: echo "React functional Test"
+
+  - job: Sonar Quality Gate
+    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
+    steps:
+      - bash: echo "Sonarqube analysis"
+      - bash: echo "Sonarqube quality gate check"
+
+  - job: Publish Artifacts
+    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
+    steps:
+      - bash: echo "Publishing"
+
+  - job: Deploy to UAT
+    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
+    steps:
+      - bash: echo "Provision UAT"
+      - bash: echo "Deploy to UAT"
+
+  - job: UAT Test
+    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
+    strategy:
+      parallel:
+    steps:
+      - bash: echo "End2End"
+      - bash: echo "Performance"
+      - bash: echo "*-ilities..."
+
+  - job: Deploy to DEV
+    condition: and(succeeded(), eq(variables.isDevelop, true))
+    steps:
+      - bash: echo "Deploy"
+
+  - job: Deploy to Staging
+    condition: and(succeeded(), eq(variables.isRelease, true), eq(variables.isMaster, true))
+    steps:
+      - bash: echo "Deploy"
+
+  - job: Deploy to PROD
+    condition: and(succeeded(), eq(variables.isMaster, true))
+    steps:
+      - bash: echo "Deploy"
