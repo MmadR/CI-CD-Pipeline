@@ -32,7 +32,7 @@ pipeline {
         }
         stage('Integration') {
             when {
-                not { branch pattern: "^(hotfix|feature)", comparator: "REGEXP" }
+                not { branch pattern: "^(feature|hotfix)/(\\d|\\w)+", comparator: "REGEXP" }
             }
             parallel {
                 stage('Junit Integration Test') {
@@ -49,7 +49,7 @@ pipeline {
         }
         stage('Sonar Analysis') {
             when {
-                not { branch pattern: "^(hotfix|feature)", comparator: "REGEXP" }
+                not { branch pattern: "^(feature|hotfix)/(\\d|\\w)+", comparator: "REGEXP" }
             }
             steps {
                 echo "Sonar Analysis"
@@ -58,7 +58,7 @@ pipeline {
         }
         stage('Publish Artifacts') {
             when {
-                not { branch pattern: "^(hotfix|feature)", comparator: "REGEXP" }
+                not { branch pattern: "^(feature|hotfix)/(\\d|\\w)+", comparator: "REGEXP" }
             }
             steps {
                 echo "Push to Registry"
@@ -66,7 +66,7 @@ pipeline {
         }
         stage('Deploy to UAT') {
             when {
-                not { branch pattern: "^(hotfix|feature)", comparator: "REGEXP" }
+                not { branch pattern: "^(feature|hotfix)/(\\d|\\w)+", comparator: "REGEXP" }
             }
             steps {
                 echo "Provision UAT"
@@ -75,7 +75,7 @@ pipeline {
         }
         stage('UAT Tests') {
             when {
-                not { branch pattern: "^(hotfix|feature)", comparator: "REGEXP" }
+                not { branch pattern: "^(feature|hotfix)/(\\d|\\w)+", comparator: "REGEXP" }
             }
             parallel {
                 stage('End to End Test Client/Server') {
@@ -108,7 +108,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'master'
-                    branch pattern: "^release", comparator: "REGEXP"
+                    branch pattern: "^release/(\\w|\\d|-|.)+", comparator: "REGEXP"
                 }
             }
             steps {
