@@ -108,7 +108,7 @@ pipeline {
             when {
                 anyOf {
                     branch 'master'
-                    branch pattern: "^release/(\\d|\\w)+", comparator: "REGEXP"
+                    branch pattern: "^release/(\\w|\\d|-|.)+", comparator: "REGEXP"
                 }
             }
             steps {
