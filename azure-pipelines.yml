@@ -21,65 +21,38 @@ variables:
 pool:
   vmImage: "ubuntu-16.04"
 
-jobs:
-  - job: Build
-    steps:
-      - bash: echo "Build"
+stages:
+  - stage: Build
+    jobs:
+      - job: Build
+        steps:
+          - bash: echo "Build"
+  - stage: Unit_Test
+    dependsOn: Build
+    jobs:
+      - job: JUnit_Test
+        steps:
+          - bash: echo "JUnit Test"
+      - job: JUnit_Test
+        steps:
+          - bash: echo "Jest Test"
 
-  - job: Unit_Test
-    strategy:
-      parallel: 4
-    steps:
-      - bash: echo "JUnit Test"
-      - bash: echo "Jest Test"
-      - bash: echo "ArchUnit Test"
-      - bash: echo "JDepend Test"
-
-  - job: Integration_Test
+  - stage: Integration_Test
+    dependsOn: Unit_Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
-    strategy:
-      parallel: 2
-    steps:
-      - bash: echo "JUnit Integration Test"
-      - bash: echo "React functional Test"
+    jobs:
+      - job: Test
+        steps:
+          - bash: echo "JUnit Integration Test"
+      - job: JUnit_Test
+        steps:
+          - bash: echo "UII Functional Test"
 
-  - job: Sonar_Quality_Gate
+  - stage: Sonar_Quality_Gate
+    dependsOn: Integration_Test
     condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
-    steps:
-      - bash: echo "Sonarqube analysis"
-      - bash: echo "Sonarqube quality gate check"
-
-  - job: Publish_Artifacts
-    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
-    steps:
-      - bash: echo "Publishing"
-
-  - job: Deploy_UAT
-    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
-    steps:
-      - bash: echo "Provision UAT"
-      - bash: echo "Deploy to UAT"
-
-  - job: UAT_Test
-    condition: and(succeeded(), ne(variables.isHotfix, true), ne(variables.isFeature, true))
-    strategy:
-      parallel: 3
-    steps:
-      - bash: echo "End2End"
-      - bash: echo "Performance"
-      - bash: echo "*-ilities..."
-
-  - job: Deploy_DEV
-    condition: and(succeeded(), eq(variables.isDevelop, true))
-    steps:
-      - bash: echo "Deploy"
-
-  - job: Deploy_Staging
-    condition: and(succeeded(), eq(variables.isRelease, true), eq(variables.isMaster, true))
-    steps:
-      - bash: echo "Deploy"
-
-  - job: Deploy_PROD
-    condition: and(succeeded(), eq(variables.isMaster, true))
-    steps:
-      - bash: echo "Deploy"
+    jobs:
+      - job: Test
+        steps:
+          - bash: echo "Sonarqube analysis"
+          - bash: echo "Sonarqube quality gate check"
